@@ -236,8 +236,12 @@ namespace Lib_K_Relay.Networking
                 }
                 else if (buffer.Index == 4)
                 {   // We have the first four bytes, resize the client buffer
-                    buffer.Resize(IPAddress.NetworkToHostOrder(
-                        BitConverter.ToInt32(buffer.Bytes, 0)));
+                    int len = IPAddress.NetworkToHostOrder(
+                        BitConverter.ToInt32(buffer.Bytes, 0));
+                    if (len == 1014001516) //known issue
+                        throw new Exception("Invalid Buffer Size Problem: Try joining a non-proxy server then switching to the proxy server again. More info: https://www.mpgh.net/forum/showthread.php?t=1196439");
+
+                    buffer.Resize(len);
                     BeginRead(buffer.Index, buffer.BytesRemaining(), isClient);
                 }
                 else if (buffer.BytesRemaining() > 0)
